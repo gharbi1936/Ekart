@@ -73,6 +73,16 @@ pipeline {
                     }
                 }
             }
+        stage('deploy') {
+            steps {
+                script{
+                    // Authenticate with Docker registry
+                    withDockerRegistry(credentialsId: 'docker', toolName: 'docker' ){ 
+                    // Push Docker image to the registry
+                    sh 'docker run -d -p 8070:8070 -n ecard gharbi1936/shopping-card:v0.0.1 '
+                    }
+                }
+            }
         }
     }
 }
