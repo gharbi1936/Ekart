@@ -1,5 +1,9 @@
 pipeline {
     agent any
+    options {
+        // Set the discard option to 'logRotator'
+        buildDiscarder(logRotator(numToKeepStr: '10', daysToKeepStr: '7'))
+    }
     // Declare tools for JDK 11 and Maven
     tools {
         jdk 'jdk11'
