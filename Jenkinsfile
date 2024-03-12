@@ -74,6 +74,11 @@ pipeline {
                 }
             }
         }
+        stage('vul scan with trivy') {
+            steps {
+                sh 'trivy image --no-progress --severity MEDIUM,HIGH,CRITICAL --exit-code 0 gharbi1936/shopping-card:v0.0.1'
+            }
+        }
         stage('deploy') {
             steps {
                 script{
