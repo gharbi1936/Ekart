@@ -10,6 +10,7 @@ pipeline {
     environment {
         // SonarQube Scanner installations// SonarQube Scanner tool name = "sonar-scaner" 
         SONAR_SCANNER_HOME = tool 'sonar-scanner'
+        IMAGE = gharbi1936/shopping-card:v0.0.1
         
     }
 
@@ -60,7 +61,7 @@ pipeline {
                 // echo "User group permissions:"
                 // groups
                 // '''
-                sh 'docker build -t gharbi1936/shopping-card:v0.0.1 -f docker/Dockerfile .'
+                sh "docker build -t $IMAGE -f docker/Dockerfile ."
             }
         }
         stage('push') {
@@ -69,9 +70,14 @@ pipeline {
                     // Authenticate with Docker registry
                     withDockerRegistry(credentialsId: 'docker', toolName: 'docker' ){ 
                     // Push Docker image to the registry
-                    sh 'docker push gharbi1936/shopping-card:v0.0.1'
+                    sh "docker push $IMAGE"
                     }
                 }
+            }
+        }
+        stage('trivy') {
+            steps {
+                sh 'trivy image --no-progress --severity MEDIUM,HIGH,CRITICAL --exit-code 0 gharbi1936/shopping-card:v0.0.1'
             }
         }
         stage('deploy') {
@@ -80,7 +86,7 @@ pipeline {
                     // Authenticate with Docker registry
                     withDockerRegistry(credentialsId: 'docker', toolName: 'docker' ){ 
                     // Push Docker image to the registry
-                    sh 'docker run -d -p 8070:8070 --name container-branch-main gharbi1936/shopping-card:v0.0.1 '
+                    sh "docker run -d -p 8070:8070 --name container-branch-main $IMAGE "
                     }
                 }
             }
